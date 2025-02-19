@@ -1,0 +1,153 @@
+import java.util.*;
+
+public class MathQuizExpenseManager{
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final List<Expense> expenses = new ArrayList<>();
+    private static int score;
+
+    public static void main(String[] args){
+        while (true){
+            showMainMenu();
+        }
+    }
+
+    private static void showMainMenu() {
+        System.out.println("\n=== Main Menu ===");
+        System.out.println("1. Math Quiz");
+        System.out.println("2. Expense Management");
+        System.out.println("3. Exit");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+
+        if (choice == 1) startMathQuiz();
+        else if (choice == 2) manageExpenses();
+        else if (choice == 3) {
+            System.out.println("Exiting application. Goodbye!");
+            System.exit(0);
+        } else {
+            System.out.println("Invalid choice. Try again.");
+        }
+    }
+
+    private static void startMathQuiz() {
+        Random random = new Random();
+        score = 0;
+
+        while (true) {
+            int num1 = random.nextInt(10) + 1;
+            int num2 = random.nextInt(10) + 1;
+            char operator = "+-*".charAt(random.nextInt(3));
+            int correctAnswer = switch (operator) {
+                case '+' -> num1 + num2;
+                case '-' -> num1 - num2;
+                default -> num1 * num2;
+            };
+
+            System.out.printf("Solve: %d %c %d = ?\n", num1, operator, num2);
+            if (scanner.nextInt() == correctAnswer) {
+                System.out.println("Correct!");
+                score++;
+            } else {
+                System.out.printf("Wrong! The correct answer was %d.\n", correctAnswer);
+            }
+            System.out.println("\n1. Next Question\n2. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            if (choice == 2) {
+                System.out.printf("Quiz Over! Your Score: %d\n", score);
+                break;
+            }
+        }
+    }
+
+    private static void manageExpenses(){
+        while (true) {
+            System.out.println("\n=== Expense Management ===");
+            System.out.println("1. Add Expense\n2. View Expenses\n3. Edit Expense\n4. Delete Expense\n5. Back");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choice == 1) addExpense();
+            else if (choice == 2) viewExpenses();
+            else if (choice == 3) editExpense();
+            else if (choice == 4) deleteExpense();
+            else if (choice == 5) return;
+            else System.out.println("Invalid choice. Try again.");
+        }
+    }
+
+    private static void addExpense(){
+        System.out.print("Description: ");
+        String description = scanner.nextLine();
+        System.out.print("Amount: ");
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("Category: ");
+        String category = scanner.nextLine();
+
+        expenses.add(new Expense(description, amount, category));
+        System.out.println("Expense added!");
+    }
+
+    private static void viewExpenses() {
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses recorded.");
+            return;
+        }
+        System.out.println("\nExpenses:");
+        for (int i = 0; i < expenses.size(); i++) {
+            System.out.printf("%d. %s - $%.2f [%s]\n", i + 1, expenses.get(i).description, expenses.get(i).amount, expenses.get(i).category);
+        }
+    }
+
+    private static void editExpense(){
+        viewExpenses();
+        if (expenses.isEmpty()) return;
+
+        System.out.print("Enter expense number to edit: ");
+        int index = scanner.nextInt() - 1;
+        scanner.nextLine();
+        if (index < 0 || index >= expenses.size()) {
+            System.out.println("Invalid number.");
+            return;
+        }
+
+        System.out.print("New description: ");
+        expenses.get(index).description = scanner.nextLine();
+        System.out.print("New amount: ");
+        expenses.get(index).amount = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("New category: ");
+        expenses.get(index).category = scanner.nextLine();
+
+        System.out.println("Expense updated!");
+    }
+
+    private static void deleteExpense(){
+        viewExpenses();
+        if (expenses.isEmpty()) return;
+
+        System.out.print("Enter expense number to delete: ");
+        int index = scanner.nextInt() - 1;
+        if (index < 0 || index >= expenses.size()) {
+            System.out.println("Invalid number.");
+            return;
+        }
+
+        expenses.remove(index);
+        System.out.println("Expense deleted!");
+    }
+}
+
+class Expense{
+    String description;
+    double amount;
+    String category;
+
+    Expense(String description, double amount, String category){
+        this.description = description;
+        this.amount = amount;
+        this.category = category;
+    }
+}
